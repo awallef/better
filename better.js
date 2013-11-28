@@ -1223,7 +1223,8 @@
      */
     function log(obj)
     {
-        AbstractFacade.log(obj);
+        for (n = 0; n < arguments.length; n++)
+            AbstractFacade.log(arguments[n]);
     }
 
     function setDebug(bool)

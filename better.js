@@ -416,7 +416,7 @@
         return (this.processMap[processName]) ? true : false;
     };
 
-    Processor.prototype.addProcess = function(processName, tasksArray)
+    Processor.prototype.registerProcess = function(processName, tasksArray)
     {
         this.processMap[processName] = new Process(Processor.getNewProcessId(), tasksArray);
     };
@@ -525,11 +525,22 @@
     function Sequencer() {
     }
 
+    Sequencer.prototype.facade = null;
+    Sequencer.prototype._cronStack = {};
+    Sequencer.prototype._animationFrameStack = {};
+    Sequencer.prototype._runningFrameStack = [];
+    Sequencer.prototype._isFrameLoopRunnig = false;
+
     Sequencer.prototype.goTo = function(label, body, type)
     {
         if (body == null)
             body = {};
         this._exec(label, body, type);
+    };
+
+    Sequencer.prototype.cronExec = function(note)
+    {
+        this.goTo(note.name, note.body, note.type);
     };
 
     Sequencer.prototype._exec = function(label, body, type)
@@ -542,9 +553,99 @@
         }
     };
 
+    /* Animation request JOB
+     **********************************************/
+    Sequencer.prototype.registerAnimationFrameJob = function(labelOrName, note)
+    {
+        this._animationFrameStack[labelOrName] = note;
+    };
+
+    Sequencer.prototype.startAnimationFrameJob = function(labelOrName)
+    {
+        if (!this._animationFrameStack[labelOrName])
+            return;
+        var doesJobExists = false;
+        for (var i = 0; i < this._runningFrameStack.length; i++)
+        {
+            if (this._runningFrameStack[i] == labelOrName)
+            {
+                doesJobExists = true;
+            }
+        }
+        if (!doesJobExists)
+        {
+            this._runningFrameStack.push(labelOrName);
+        }
+        if (!this._isFrameLoopRunnig)
+        {
+            this.facade.log('Start Animation Frame loop');
+            this._isFrameLoopRunnig = true;
+            this.loop();
+        }
+    };
+
+    Sequencer.prototype.stopAnimationFrameJob = function(labelOrName, andDestroy)
+    {
+        if (this._animationFrameStack[labelOrName])
+        {
+            var newStack = [];
+            for (var i = 0; i < this._runningFrameStack.length; i++)
+            {
+                if (this._runningFrameStack[i] != labelOrName)
+                {
+                    newStack = this._runningFrameStack[i];
+                }
+            }
+
+            this._runningFrameStack = newStack;
+
+            if (this._runningFrameStack.length == 0) {
+                this.facade.log('Stop Animation Frame loop');
+                this._isFrameLoopRunnig = false;
+            }
+
+            if (andDestroy)
+            {
+                delete this._animationFrameStack[labelOrName];
+            }
+
+        }
+    };
+
+    Sequencer.prototype.stopAllAnimationFrameJob = function(andDestroy)
+    {
+        for (var i in this._cronStack)
+        {
+            this._runningFrameStack = [];
+            this.facade.log('Stop Animation Frame loop');
+            this._isFrameLoopRunnig = false;
+            if (andDestroy)
+            {
+                this._animationFrameStack = {};
+            }
+        }
+    };
+
+    Sequencer.prototype.loop = function()
+    {
+        if (!this._isFrameLoopRunnig)
+            return;
+
+        requestAnimationFrame((function(self) {
+            return function() {
+                self.loop();
+            }
+        })(this));
+
+        for (var i = 0; i < this._runningFrameStack.length; i++)
+        {
+            this.cronExec(this._animationFrameStack[ this._runningFrameStack[i] ]);
+        }
+    };
+
     /* CRON JOB
      **********************************************/
-    Sequencer.prototype.addCronJob = function(labelOrName, delay, note, stopCount)
+    Sequencer.prototype.registerCronJob = function(labelOrName, delay, note, stopCount)
     {
 
         if (!this._cronStack[labelOrName])
@@ -595,48 +696,6 @@
         }
     };
 
-    Sequencer.prototype.cronExec = function(labelOrName, body, type)
-    {
-        this.goTo(labelOrName, body, type);
-    };
-
-    Sequencer.prototype.facade = null;
-    Sequencer.prototype._cronStack = {};
-
-    /***
-     *    __________                                           
-     *    \______   \_______  ____   ____  ____   ______ ______
-     *     |     ___/\_  __ \/  _ \_/ ___\/ __ \ /  ___//  ___/
-     *     |    |     |  | \(  <_> )  \__\  ___/ \___ \ \___ \ 
-     *     |____|     |__|   \____/ \___  >___  >____  >____  >
-     *                                  \/    \/     \/     \/ 
-     */
-    function Process(pid, tasksArray)
-    {
-        this.pid = pid;
-        this.step = 0;
-        this.tasksArray = tasksArray;
-        this.state = this.constructor.READY;
-    }
-
-    Process.prototype.getCurrentTask = function()
-    {
-        return this.tasksArray[ this.step ];
-    };
-
-    Process.prototype.isOver = function()
-    {
-        return (this.step == this.tasksArray.length - 1) ? true : false;
-    };
-
-    Process.prototype.pid = null;
-    Process.prototype.step = null;
-    Process.prototype.tasksArray = null;
-
-    Process.READY = 'Process.READY';
-    Process.RUNNING = 'Process.RUNNING';
-    Process.CRASHED = 'Process.CRASHED';
-
     /***
      *    _________                            ____.     ___.    
      *    \_   ___ \_______  ____   ____      |    | ____\_ |__  
@@ -678,6 +737,8 @@
         if (this.counter == this.stopCount)
             clearInterval(this.id);
 
+        if (this.counter == Number.MAX_VALUE)
+            this.counter = 0;
     };
 
     CronJob.prototype.stop = function()
@@ -706,6 +767,102 @@
     CronJob.prototype.stopCount = null;
     CronJob.prototype.labelOrName = null;
     CronJob.prototype.isRunning = false;
+
+    /***
+     *    ___________                    __     ___ ___                    .___.__                
+     *    \_   _____/__  __ ____   _____/  |_  /   |   \_____    ____    __| _/|  |   ___________ 
+     *     |    __)_\  \/ // __ \ /    \   __\/    ~    \__  \  /    \  / __ | |  | _/ __ \_  __ \
+     *     |        \\   /\  ___/|   |  \  |  \    Y    // __ \|   |  \/ /_/ | |  |_\  ___/|  | \/
+     *    /_______  / \_/  \___  >___|  /__|   \___|_  /(____  /___|  /\____ | |____/\___  >__|   
+     *            \/           \/     \/             \/      \/     \/      \/           \/       
+     */
+
+    function EventHandler() {
+
+    }
+
+    EventHandler.prototype.facade = null;
+    EventHandler.prototype._handlerStack = {};
+
+    EventHandler.prototype.registerEventHandler = function(labelOrName, element, event, note, useCapture, stopPropagation)
+    {
+        this._handlerStack[ labelOrName ] = {
+            element: element,
+            event: event,
+            note: note,
+            useCapture: useCapture,
+            stopPropagation: stopPropagation
+        }
+
+        element.addEventListener(
+                event,
+                this.handleEvent.bind(null, this, labelOrName),
+                useCapture
+                );
+    };
+
+    EventHandler.prototype.removeEventHandler = function(labelOrName)
+    {
+        if (!this._handlerStack[ labelOrName ])
+            return;
+
+        this._handlerStack[ labelOrName ]['element'].addEventListener(
+                this._handlerStack[ labelOrName ]['event'],
+                this.handleEvent.bind(null, this, labelOrName),
+                this._handlerStack[ labelOrName ]['useCapture']
+                );
+
+        delete this._handlerStack[ labelOrName ];
+    };
+
+    EventHandler.prototype.handleEvent = function(self, labelOrName, evt)
+    {
+        if (!self._handlerStack[ labelOrName ])
+            return;
+
+        var obj = self._handlerStack[ labelOrName ]
+
+        if (obj.stopPropagation)
+        {
+            evt.stopPropagation();
+        }
+
+        self.facade.goTo(obj.note.name, obj.note.body, obj.note.type);
+    };
+
+    /***
+     *    __________                                           
+     *    \______   \_______  ____   ____  ____   ______ ______
+     *     |     ___/\_  __ \/  _ \_/ ___\/ __ \ /  ___//  ___/
+     *     |    |     |  | \(  <_> )  \__\  ___/ \___ \ \___ \ 
+     *     |____|     |__|   \____/ \___  >___  >____  >____  >
+     *                                  \/    \/     \/     \/ 
+     */
+    function Process(pid, tasksArray)
+    {
+        this.pid = pid;
+        this.step = 0;
+        this.tasksArray = tasksArray;
+        this.state = this.constructor.READY;
+    }
+
+    Process.prototype.getCurrentTask = function()
+    {
+        return this.tasksArray[ this.step ];
+    };
+
+    Process.prototype.isOver = function()
+    {
+        return (this.step == this.tasksArray.length - 1) ? true : false;
+    };
+
+    Process.prototype.pid = null;
+    Process.prototype.step = null;
+    Process.prototype.tasksArray = null;
+
+    Process.READY = 'Process.READY';
+    Process.RUNNING = 'Process.RUNNING';
+    Process.CRASHED = 'Process.CRASHED';
 
     /***
      *    ____   ____.__               
@@ -896,6 +1053,7 @@
         this.commandMap = [];
         this.processor = new Processor();
         this.sequencer = new Sequencer();
+        this.eventHandler = new EventHandler();
     }
 
     Controller.prototype.executeCommand = function(note)
@@ -939,6 +1097,7 @@
     Controller.prototype.commandMap = null;
     Controller.prototype.processor = null;
     Controller.prototype.sequencer = null;
+    Controller.prototype.eventHandler = null;
 
     /***
      *       _____ ___.             __                        __ ___________                         .___      
@@ -963,10 +1122,39 @@
         this.controller.sequencer.goTo(label, body, type);
     };
 
-// CRON JOB
-    AbstractFacade.prototype.addCronJob = function(labelOrName, delay, note, stopCount)
+// Event Handler
+    AbstractFacade.prototype.registerEventHandler = function(labelOrName, element, event, note, useCapture, stopPropagation)
     {
-        this.controller.sequencer.addCronJob(labelOrName, delay, note, stopCount);
+        this.controller.eventHandler.registerEventHandler(labelOrName, element, event, note, useCapture, stopPropagation);
+    };
+
+    AbstractFacade.prototype.removeEventHandler = function(labelOrName)
+    {
+        this.controller.eventHandler.removeEventHandler(labelOrName);
+    };
+
+// Animation Frame JOB
+    AbstractFacade.prototype.registerAnimationFrameJob = function(labelOrName, note)
+    {
+        this.controller.sequencer.registerAnimationFrameJob(labelOrName, note);
+    };
+    AbstractFacade.prototype.startAnimationFrameJob = function(labelOrName)
+    {
+        this.controller.sequencer.startAnimationFrameJob(labelOrName);
+    };
+    AbstractFacade.prototype.stopAnimationFrameJob = function(labelOrName, andDestroy)
+    {
+        this.controller.sequencer.stopAnimationFrameJob(labelOrName, andDestroy);
+    };
+    AbstractFacade.prototype.stopAllAnimationFrameJob = function(andDestroy)
+    {
+        this.controller.sequencer.stopAllAnimationFrameJob(andDestroy);
+    };
+
+// CRON JOB
+    AbstractFacade.prototype.registerCronJob = function(labelOrName, delay, note, stopCount)
+    {
+        this.controller.sequencer.registerCronJob(labelOrName, delay, note, stopCount);
     };
     AbstractFacade.prototype.startCronJob = function(labelOrName)
     {
@@ -1002,6 +1190,7 @@
         this.controller.view = this.view;
         this.controller.processor.facade = this;
         this.controller.sequencer.facade = this;
+        this.controller.eventHandler.facade = this;
         this.model.facade = this;
 
         this.stackMode = false;
@@ -1018,7 +1207,9 @@
         this.initCommands(configObject);
         this.initProcesses(configObject);
         this.initServices(configObject);
-        this.runInstall(configObject);
+        this.initEventHandlers(configObject);
+        this.initSequences(configObject);
+        this.bootstrap(configObject);
     };
 
     AbstractFacade.prototype.initProxies = function(configObject) {
@@ -1031,11 +1222,15 @@
     };
     AbstractFacade.prototype.initServices = function(configObject) {
     };
-    AbstractFacade.prototype.runInstall = function(configObject) {
+    AbstractFacade.prototype.initEventHandlers = function(configObject) {
+    };
+    AbstractFacade.prototype.initSequences = function(configObject) {
+    };
+    AbstractFacade.prototype.bootstrap = function(configObject) {
     };
 
 // SERVICES
-    AbstractFacade.prototype.addService = function(name, serviceClass, configObject)
+    AbstractFacade.prototype.registerService = function(name, serviceClass, configObject)
     {
         if (!this.servicesMap.hasOwnProperty(name))
         {
@@ -1054,9 +1249,9 @@
     };
 
 //PROCESSOR SHORT CUTS
-    AbstractFacade.prototype.addProcess = function(processName, tasksArray)
+    AbstractFacade.prototype.registerProcess = function(processName, tasksArray)
     {
-        this.controller.processor.addProcess(processName, tasksArray);
+        this.controller.processor.registerProcess(processName, tasksArray);
     };
 
     AbstractFacade.prototype.removeProcess = function(processName)
@@ -1165,7 +1360,7 @@
 
         } else {
             var note = this.stack.shift();
-            this.log('facade send notification: ' + note.name);
+            //this.log('facade send notification: ' + note.name);
             this.notifyObservers(note);
             if (this.stack.length > 0)
                 setTimeout(this.flushStack, 300);
@@ -1199,21 +1394,6 @@
     AbstractFacade.isDebug = true;
 
     /***
-     *    ___________                    __   
-     *    \_   _____/__  __ ____   _____/  |_ 
-     *     |    __)_\  \/ // __ \ /    \   __\
-     *     |        \\   /\  ___/|   |  \  |  
-     *    /_______  / \_/  \___  >___|  /__|  
-     *            \/           \/     \/      
-     */
-    var Event = {
-        responsiveEvent: {
-            RESIZE_EVENT: "Event.responsiveEvent.RESIZE_EVENT",
-            REFRESH: "Event.responsiveEvent.REFRESH",
-        }
-    };
-
-    /***
      *     ____ ___   __  .__.__          
      *    |    |   \_/  |_|__|  |   ______
      *    |    |   /\   __\  |  |  /  ___/
@@ -1238,7 +1418,7 @@
         AbstractCommand: AbstractCommand,
         AbstractFacade: AbstractFacade,
         AbstractService: AbstractService,
-        Event: Event,
+        Notification: Notification,
         log: log,
         setDebug: setDebug
     };

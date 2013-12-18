@@ -9,7 +9,7 @@
  * 
  *  better v0.0.1
  *  
- *  Better - Fater - Stronger
+ *  Better - Faster - Stronger
  *
  *  insipired by pureMVC Framework and PureMVC JS Native Port by David Foley, Frédéric Saunier, & Alain Duchesneau
  *
@@ -1131,8 +1131,7 @@
     AbstractFacade.prototype.removeEventHandler = function(labelOrName)
     {
         this.controller.eventHandler.removeEventHandler(labelOrName);
-    };
-
+    };  
 // Animation Frame JOB
     AbstractFacade.prototype.registerAnimationFrameJob = function(labelOrName, note)
     {
@@ -1207,7 +1206,7 @@
         this.initCommands(configObject);
         this.initProcesses(configObject);
         this.initServices(configObject);
-        this.initEventHandlers(configObject);
+        this.initHandlers(configObject);
         this.initSequences(configObject);
         this.bootstrap(configObject);
     };
@@ -1222,7 +1221,7 @@
     };
     AbstractFacade.prototype.initServices = function(configObject) {
     };
-    AbstractFacade.prototype.initEventHandlers = function(configObject) {
+    AbstractFacade.prototype.initHandlers = function(configObject) {
     };
     AbstractFacade.prototype.initSequences = function(configObject) {
     };

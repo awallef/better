@@ -497,10 +497,10 @@
         this.facade.sendNotification(task, body, type, header);
 
         process = null;
-        //task = null;
-        //type = null;
-        //header.kill();
-        //header = null;
+    //task = null;
+    //type = null;
+    //header.kill();
+    //header = null;
     };
 
     Processor.prototype.processMap = null;
@@ -794,11 +794,26 @@
             stopPropagation: stopPropagation
         }
 
-        element.addEventListener(
-                event,
-                this.handleEvent.bind(null, this, labelOrName),
-                useCapture
-                );
+        var self = this;
+        var listener = this.handleEvent;
+        var getEvent = this.getEvent;
+
+        if (element.addEventListener ){  // W3C DOM
+            element.addEventListener(
+            event,
+            function(evt){ listener(self, labelOrName, evt, element); },
+            useCapture
+        );
+        }else if(element.attachEvent) { // IE DOM
+
+            element.attachEvent(
+            "on"+event,
+            function(evt){ evt = getEvent(evt); listener(self, labelOrName, evt, element); }
+        );
+
+        }else{
+            element["on"+event] = function(evt){ evt = getEvent(evt); listener(self, labelOrName, evt, element); };
+        } 
     };
 
     EventHandler.prototype.removeEventHandler = function(labelOrName)
@@ -806,27 +821,49 @@
         if (!this._handlerStack[ labelOrName ])
             return;
 
-        this._handlerStack[ labelOrName ]['element'].addEventListener(
-                this._handlerStack[ labelOrName ]['event'],
-                this.handleEvent.bind(null, this, labelOrName),
-                this._handlerStack[ labelOrName ]['useCapture']
-                );
+        var listener = this.handleEvent;
+
+        if (this._handlerStack[ labelOrName ]['element'].removeEventListener){  // W3C DOM
+            this._handlerStack[ labelOrName ]['element'].removeEventListener(
+            this._handlerStack[ labelOrName ]['event'],
+            listener,
+            this._handlerStack[ labelOrName ]['useCapture']
+        );
+        }else if (this._handlerStack[ labelOrName ]['element'].detachEvent) { // IE DOM
+            this._handlerStack[ labelOrName ]['element'].detachEvent(
+            'on'+this._handlerStack[ labelOrName ]['event'],
+            listener
+        );
+        }else{
+            this._handlerStack[ labelOrName ]['element'][ "on"+this._handlerStack[ labelOrName ]['event'] ] = null;
+        }
+
 
         delete this._handlerStack[ labelOrName ];
     };
 
-    EventHandler.prototype.handleEvent = function(self, labelOrName, evt)
+    EventHandler.prototype.getEvent = function(e)
+    {
+        if(!e) e = window.event; // || event
+        if(e.srcElement) e.target = e.srcElement;
+        return e;
+    };
+    
+    EventHandler.prototype.handleEvent = function(self, labelOrName, evt, element)
     {
         if (!self._handlerStack[ labelOrName ])
             return;
 
-        var obj = self._handlerStack[ labelOrName ]
+        var obj = self._handlerStack[ labelOrName ];
 
         if (obj.stopPropagation)
         {
-            evt.stopPropagation();
+            if (evt.stopPropagation) {
+                evt.stopPropagation();
+            }else {
+                evt.cancelBubble = true;
+            }
         }
-
         self.facade.goTo(obj.note.name, obj.note.body, obj.note.type);
     };
 
@@ -1122,7 +1159,7 @@
         this.controller.sequencer.goTo(label, body, type);
     };
 
-// Event Handler
+    // Event Handler
     AbstractFacade.prototype.registerEventHandler = function(labelOrName, element, event, note, useCapture, stopPropagation)
     {
         this.controller.eventHandler.registerEventHandler(labelOrName, element, event, note, useCapture, stopPropagation);
@@ -1132,7 +1169,7 @@
     {
         this.controller.eventHandler.removeEventHandler(labelOrName);
     };  
-// Animation Frame JOB
+    // Animation Frame JOB
     AbstractFacade.prototype.registerAnimationFrameJob = function(labelOrName, note)
     {
         this.controller.sequencer.registerAnimationFrameJob(labelOrName, note);
@@ -1150,7 +1187,7 @@
         this.controller.sequencer.stopAllAnimationFrameJob(andDestroy);
     };
 
-// CRON JOB
+    // CRON JOB
     AbstractFacade.prototype.registerCronJob = function(labelOrName, delay, note, stopCount)
     {
         this.controller.sequencer.registerCronJob(labelOrName, delay, note, stopCount);
@@ -1228,7 +1265,7 @@
     AbstractFacade.prototype.bootstrap = function(configObject) {
     };
 
-// SERVICES
+    // SERVICES
     AbstractFacade.prototype.registerService = function(name, serviceClass, configObject)
     {
         if (!this.servicesMap.hasOwnProperty(name))
@@ -1247,7 +1284,7 @@
         }
     };
 
-//PROCESSOR SHORT CUTS
+    //PROCESSOR SHORT CUTS
     AbstractFacade.prototype.registerProcess = function(processName, tasksArray)
     {
         this.controller.processor.registerProcess(processName, tasksArray);
@@ -1268,7 +1305,7 @@
         this.controller.processor.nextCommand(notification);
     };
 
-// CONTROLLER SHORT CUTS
+    // CONTROLLER SHORT CUTS
     AbstractFacade.prototype.registerCommand = function(notificationName, commandClassRef)
     {
         this.controller.registerCommand(notificationName, commandClassRef);
@@ -1284,7 +1321,7 @@
         return this.controller.hasCommand(notificationName);
     };
 
-// MODEL SHORT CUTS
+    // MODEL SHORT CUTS
     AbstractFacade.prototype.registerProxy = function(proxy)
     {
         this.model.registerProxy(proxy);
@@ -1311,7 +1348,7 @@
         return this.model.hasProxy(proxyName);
     };
 
-// VIEW SHORT CUTS
+    // VIEW SHORT CUTS
     AbstractFacade.prototype.registerMediator = function(mediator)
     {
         if (this.view != null)

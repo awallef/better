@@ -1242,12 +1242,12 @@
 
     AbstractFacade.prototype.init = function(configObject)
     {
+        this.initServices(configObject);
         this.initRessources(configObject);
         this.initProxies(configObject);
         this.initMediators(configObject);
         this.initCommands(configObject);
         this.initProcesses(configObject);
-        this.initServices(configObject);
         this.initHandlers(configObject);
         this.initSequences(configObject);
         this.bootstrap(configObject);
@@ -1454,16 +1454,37 @@
      *    |______/   |__| |__|____/____  >
      *                                 \/ 
      */
-    function log(obj)
+    var log = function(obj)
     {
         for (n = 0; n < arguments.length; n++)
             AbstractFacade.log(arguments[n]);
-    }
+    };
 
-    function setDebug(bool)
+    var setDebug = function (bool)
     {
         AbstractFacade.isDebug = bool;
-    }
+    };
+    
+    var in_array = function  (needle, haystack, argStrict) {
+        var key = '',
+        strict = !! argStrict;
+
+        if (strict) {
+            for (key in haystack) {
+                if (haystack[key] === needle) {
+                    return true;
+                }
+            }
+        } else {
+            for (key in haystack) {
+                if (haystack[key] == needle) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    };
 
     scope.better = {
         AbstractProxy: AbstractProxy,
@@ -1473,7 +1494,8 @@
         AbstractService: AbstractService,
         Notification: Notification,
         log: log,
-        setDebug: setDebug
+        setDebug: setDebug,
+        'in_array' : in_array
     };
 
 

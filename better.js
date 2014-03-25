@@ -280,7 +280,7 @@
     {
         return;
     };
-
+    
     AbstractMediator.prototype.mediatorName = null;
     AbstractMediator.prototype.viewComponent = null;
 
@@ -721,7 +721,7 @@
             return function() {
                 self.tick();
             }
-        })(this), this.delay);
+        })(this), this.delay );
     };
 
     CronJob.prototype.tick = function()
@@ -864,7 +864,14 @@
                 evt.cancelBubble = true;
             }
         }
+        obj.note.body = obj.note.body || {};
+        obj.note.body.event = evt;
         self.facade.goTo(obj.note.name, obj.note.body, obj.note.type);
+    };
+    
+    EventHandler.prototype.doesHandleEvent = function( labelOrName )
+    {
+        return ( !this._handlerStack[ labelOrName ] )? false : true;
     };
 
     /***
@@ -945,6 +952,8 @@
                 observer.notifyObserver(notification);
             }
         }
+        
+        
     };
 
     View.prototype.removeObserver = function(notificationName, notifyContext)
@@ -1160,6 +1169,11 @@
     };
 
     // Event Handler
+    AbstractFacade.prototype.doesHandleEvent = function(labelOrName)
+    {
+        return this.controller.eventHandler.doesHandleEvent( labelOrName );
+    };
+        
     AbstractFacade.prototype.registerEventHandler = function(labelOrName, element, event, note, useCapture, stopPropagation)
     {
         this.controller.eventHandler.registerEventHandler(labelOrName, element, event, note, useCapture, stopPropagation);
@@ -1205,16 +1219,6 @@
         this.controller.sequencer.stopAllCronJob(andDestroy);
     };
 
-    AbstractFacade.prototype.getRessource = function(name)
-    {
-        return this.model.ressources[name];
-    };
-
-    AbstractFacade.prototype.setRessource = function(name, obj)
-    {
-        this.model.ressources[name] = obj;
-    };
-
     AbstractFacade.prototype._initializeFacade = function()
     {
         this.view = new View();
@@ -1238,6 +1242,7 @@
 
     AbstractFacade.prototype.init = function(configObject)
     {
+        this.initRessources(configObject);
         this.initProxies(configObject);
         this.initMediators(configObject);
         this.initCommands(configObject);
@@ -1248,6 +1253,8 @@
         this.bootstrap(configObject);
     };
 
+    AbstractFacade.prototype.initRessources = function(configObject) {
+    };
     AbstractFacade.prototype.initProxies = function(configObject) {
     };
     AbstractFacade.prototype.initMediators = function(configObject) {
@@ -1322,6 +1329,16 @@
     };
 
     // MODEL SHORT CUTS
+    AbstractFacade.prototype.getRessource = function(name)
+    {
+        return this.model.ressources[name];
+    };
+
+    AbstractFacade.prototype.setRessource = function(name, obj)
+    {
+        this.model.ressources[name] = obj;
+    };
+    
     AbstractFacade.prototype.registerProxy = function(proxy)
     {
         this.model.registerProxy(proxy);

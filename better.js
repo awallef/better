@@ -799,20 +799,41 @@
         var getEvent = this.getEvent;
 
         if (element.addEventListener ){  // W3C DOM
-            element.addEventListener(
-            event,
-            function(evt){ listener(self, labelOrName, evt, element); },
-            useCapture
-        );
+            if( stopPropagation ){
+                element.addEventListener(
+                    event,
+                    function(evt){  evt.stopPropagation(); evt.preventDefault(); listener(self, labelOrName, evt, element); },
+                    useCapture
+                );
+            }else{
+                element.addEventListener(
+                    event,
+                    function(evt){  listener(self, labelOrName, evt, element); },
+                    useCapture
+                );
+            }
         }else if(element.attachEvent) { // IE DOM
-
-            element.attachEvent(
-            "on"+event,
-            function(evt){ evt = getEvent(evt); listener(self, labelOrName, evt, element); }
-        );
+             if( stopPropagation ){
+                element.attachEvent(
+                    "on"+event,
+                    function(evt){ evt = getEvent(evt); if (evt.stopPropagation){ evt.stopPropagation(); }else{ evt.cancelBubble = true; } if(evt.preventDefault){ evt.preventDefault(); } listener(self, labelOrName, evt, element); }
+                );
+                    
+            }else{
+                element.attachEvent(
+                    "on"+event,
+                    function(evt){ evt = getEvent(evt); listener(self, labelOrName, evt, element); }
+                );
+            }
+            
 
         }else{
-            element["on"+event] = function(evt){ evt = getEvent(evt); listener(self, labelOrName, evt, element); };
+            if( stopPropagation ){
+                element["on"+event] = function(evt){ evt = getEvent(evt); if (evt.stopPropagation){ evt.stopPropagation(); }else{ evt.cancelBubble = true; } if(evt.preventDefault){ evt.preventDefault(); } listener(self, labelOrName, evt, element); };
+                    
+            }else{
+                element["on"+event] = function(evt){ evt = getEvent(evt); listener(self, labelOrName, evt, element); };
+            }
         } 
     };
 
@@ -855,15 +876,7 @@
             return;
 
         var obj = self._handlerStack[ labelOrName ];
-
-        if (obj.stopPropagation)
-        {
-            if (evt.stopPropagation) {
-                evt.stopPropagation();
-            }else {
-                evt.cancelBubble = true;
-            }
-        }
+        
         obj.note.body = obj.note.body || {};
         obj.note.body.event = evt;
         self.facade.goTo(obj.note.name, obj.note.body, obj.note.type);

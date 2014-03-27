@@ -874,13 +874,11 @@
     {
         if (!self._handlerStack[ labelOrName ])
             return;
-        console.log( self._handlerStack[ labelOrName ].note );
         var obj = better.clone( self._handlerStack[ labelOrName ].note );
         obj.body = obj.body || {};
         obj.body.event = evt;
-        var note = new Notification(obj.name, obj.body, obj.type);
-        console.log( self._handlerStack[ labelOrName ] );
-        self.facade.goTo( note.name, note.body, note.type );
+        
+        self.facade.goTo( obj.name, obj.body, obj.type );
     };
     
     EventHandler.prototype.doesHandleEvent = function( labelOrName )

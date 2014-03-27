@@ -874,12 +874,13 @@
     {
         if (!self._handlerStack[ labelOrName ])
             return;
-
-        var obj = self._handlerStack[ labelOrName ];
-        
-        obj.note.body = obj.note.body || {};
-        obj.note.body.event = evt;
-        self.facade.goTo(obj.note.name, obj.note.body, obj.note.type);
+        console.log( self._handlerStack[ labelOrName ].note );
+        var obj = better.clone( self._handlerStack[ labelOrName ].note );
+        obj.body = obj.body || {};
+        obj.body.event = evt;
+        var note = new Notification(obj.name, obj.body, obj.type);
+        console.log( self._handlerStack[ labelOrName ] );
+        self.facade.goTo( note.name, note.body, note.type );
     };
     
     EventHandler.prototype.doesHandleEvent = function( labelOrName )
@@ -1498,6 +1499,38 @@
 
         return false;
     };
+    
+    var clone = function(obj) {
+        // Handle the 3 simple types, and null or undefined
+        if (null == obj || "object" != typeof obj) return obj;
+
+        // Handle Date
+        if (obj instanceof Date) {
+            var copy = new Date();
+            copy.setTime(obj.getTime());
+            return copy;
+        }
+
+        // Handle Array
+        if (obj instanceof Array) {
+            var copy = [];
+            for (var i = 0, len = obj.length; i < len; i++) {
+                copy[i] = clone(obj[i]);
+            }
+            return copy;
+        }
+
+        // Handle Object
+        if (obj instanceof Object) {
+            var copy = {};
+            for (var attr in obj) {
+                if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+            }
+            return copy;
+        }
+
+        throw new Error("Unable to copy obj! Its type isn't supported.");
+    };
 
     scope.better = {
         AbstractProxy: AbstractProxy,
@@ -1508,7 +1541,8 @@
         Notification: Notification,
         log: log,
         setDebug: setDebug,
-        'in_array' : in_array
+        'in_array' : in_array,
+        clone : clone
     };
 
 

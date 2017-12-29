@@ -1,44 +1,33 @@
 /***
- *    __________        __    __                
- *    \______   \ _____/  |__/  |_  ___________ 
+ *    __________        __    __
+ *    \______   \ _____/  |__/  |_  ___________
  *     |    |  _// __ \   __\   __\/ __ \_  __ \
  *     |    |   \  ___/|  |  |  | \  ___/|  | \/
- *     |______  /\___  >__|  |__|  \___  >__|   
- *            \/     \/                \/       
+ *     |______  /\___  >__|  |__|  \___  >__|
+ *            \/     \/                \/
  *
- * 
+ *
  *  better v0.0.1
- *  
+ *
  *  Better - Faster - Stronger
  *
  *  insipired by pureMVC Framework and PureMVC JS Native Port by David Foley, Frédéric Saunier, & Alain Duchesneau
  *
- *  Reuse governed by Creative Commons Attribution 3.0 
+ *  Reuse governed by Creative Commons Attribution 3.0
  *  http://creativecommons.org/licenses/by/3.0/us/
- *  
+ *
  *  more infos https://github.com/awallef/better
  *
  */
 (function(scope) {
 
-    if (null == scope)
-        scope = window;
-
-    // if the global better namespace already exists, turn back now
-    if (scope.better)
-    {
-        return;
-    }
-
-    /* implementation begin */
-
     /***
-     *     _______          __  .__  _____.__              
-     *     \      \   _____/  |_|__|/ ____\__| ___________ 
+     *     _______          __  .__  _____.__
+     *     \      \   _____/  |_|__|/ ____\__| ___________
      *     /   |   \ /  _ \   __\  \   __\|  |/ __ \_  __ \
      *    /    |    (  <_> )  | |  ||  |  |  \  ___/|  | \/
-     *    \____|__  /\____/|__| |__||__|  |__|\___  >__|   
-     *            \/                              \/       
+     *    \____|__  /\____/|__| |__||__|  |__|\___  >__|
+     *            \/                              \/
      */
     function Notifier()
     {
@@ -55,12 +44,12 @@
     Notifier.prototype.facade = null;
 
     /***
-     *     _______          __  .__  _____.__               __  .__                  ___ ___                     .___            
-     *     \      \   _____/  |_|__|/ ____\__| ____ _____ _/  |_|__| ____   ____    /   |   \   ____ _____     __| _/___________ 
+     *     _______          __  .__  _____.__               __  .__                  ___ ___                     .___
+     *     \      \   _____/  |_|__|/ ____\__| ____ _____ _/  |_|__| ____   ____    /   |   \   ____ _____     __| _/___________
      *     /   |   \ /  _ \   __\  \   __\|  |/ ___\\__  \\   __\  |/  _ \ /    \  /    ~    \_/ __ \\__  \   / __ |/ __ \_  __ \
      *    /    |    (  <_> )  | |  ||  |  |  \  \___ / __ \|  | |  (  <_> )   |  \ \    Y    /\  ___/ / __ \_/ /_/ \  ___/|  | \/
-     *    \____|__  /\____/|__| |__||__|  |__|\___  >____  /__| |__|\____/|___|  /  \___|_  /  \___  >____  /\____ |\___  >__|   
-     *            \/                              \/     \/                    \/         \/       \/     \/      \/    \/       
+     *    \____|__  /\____/|__| |__||__|  |__|\___  >____  /__| |__|\____/|___|  /  \___|_  /  \___  >____  /\____ |\___  >__|
+     *            \/                              \/     \/                    \/         \/       \/     \/      \/    \/
      */
     function NotificationHeader(processName, pid, step, time)
     {
@@ -84,12 +73,12 @@
     NotificationHeader.prototype.step = null;
 
     /***
-     *     _______          __  .__  _____.__               __  .__               
-     *     \      \   _____/  |_|__|/ ____\__| ____ _____ _/  |_|__| ____   ____  
-     *     /   |   \ /  _ \   __\  \   __\|  |/ ___\\__  \\   __\  |/  _ \ /    \ 
+     *     _______          __  .__  _____.__               __  .__
+     *     \      \   _____/  |_|__|/ ____\__| ____ _____ _/  |_|__| ____   ____
+     *     /   |   \ /  _ \   __\  \   __\|  |/ ___\\__  \\   __\  |/  _ \ /    \
      *    /    |    (  <_> )  | |  ||  |  |  \  \___ / __ \|  | |  (  <_> )   |  \
      *    \____|__  /\____/|__| |__||__|  |__|\___  >____  /__| |__|\____/|___|  /
-     *            \/                              \/     \/                    \/ 
+     *            \/                              \/     \/                    \/
      */
     function Notification(name, body, type, header)
     {
@@ -133,12 +122,12 @@
     Notification.prototype.header = null;
 
     /***
-     *    ________ ___.                                           
-     *    \_____  \\_ |__   ______ ______________  __ ___________ 
+     *    ________ ___.
+     *    \_____  \\_ |__   ______ ______________  __ ___________
      *     /   |   \| __ \ /  ___// __ \_  __ \  \/ // __ \_  __ \
      *    /    |    \ \_\ \\___ \\  ___/|  | \/\   /\  ___/|  | \/
-     *    \_______  /___  /____  >\___  >__|    \_/  \___  >__|   
-     *            \/    \/     \/     \/                 \/       
+     *    \_______  /___  /____  >\___  >__|    \_/  \___  >__|
+     *            \/    \/     \/     \/                 \/
      */
     function Observer(notifyMethod, notifyContext) {
         this.setNotifyMethod(notifyMethod);
@@ -182,12 +171,12 @@
     Observer.prototype.context = null;
 
     /***
-     *       _____ ___.             __                        __ __________                             
+     *       _____ ___.             __                        __ __________
      *      /  _  \\_ |__   _______/  |_____________    _____/  |\______   \_______  _______  ______.__.
      *     /  /_\  \| __ \ /  ___/\   __\_  __ \__  \ _/ ___\   __\     ___/\_  __ \/  _ \  \/  <   |  |
      *    /    |    \ \_\ \\___ \  |  |  |  | \// __ \\  \___|  | |    |     |  | \(  <_> >    < \___  |
      *    \____|__  /___  /____  > |__|  |__|  (____  /\___  >__| |____|     |__|   \____/__/\_ \/ ____|
-     *            \/    \/     \/                   \/     \/                                  \/\/     
+     *            \/    \/     \/                   \/     \/                                  \/\/
      */
     function AbstractProxy(proxyName, data) {
         this.proxyName = proxyName || this.constructor.NAME;
@@ -231,12 +220,12 @@
     AbstractProxy.prototype.data = null;
 
     /***
-     *       _____ ___.             __                        __     _____             .___.__        __                
-     *      /  _  \\_ |__   _______/  |_____________    _____/  |_  /     \   ____   __| _/|__|____ _/  |_  ___________ 
+     *       _____ ___.             __                        __     _____             .___.__        __
+     *      /  _  \\_ |__   _______/  |_____________    _____/  |_  /     \   ____   __| _/|__|____ _/  |_  ___________
      *     /  /_\  \| __ \ /  ___/\   __\_  __ \__  \ _/ ___\   __\/  \ /  \_/ __ \ / __ | |  \__  \\   __\/  _ \_  __ \
      *    /    |    \ \_\ \\___ \  |  |  |  | \// __ \\  \___|  | /    Y    \  ___// /_/ | |  |/ __ \|  | (  <_> )  | \/
-     *    \____|__  /___  /____  > |__|  |__|  (____  /\___  >__| \____|__  /\___  >____ | |__(____  /__|  \____/|__|   
-     *            \/    \/     \/                   \/     \/             \/     \/     \/         \/                   
+     *    \____|__  /___  /____  > |__|  |__|  (____  /\___  >__| \____|__  /\___  >____ | |__(____  /__|  \____/|__|
+     *            \/    \/     \/                   \/     \/             \/     \/     \/         \/
      */
     function AbstractMediator(mediatorName, viewComponent) {
         this.mediatorName = mediatorName || this.constructor.NAME;
@@ -280,7 +269,7 @@
     {
         return;
     };
-    
+
     AbstractMediator.prototype.mediatorName = null;
     AbstractMediator.prototype.viewComponent = null;
 
@@ -290,10 +279,10 @@
     /***
      *       _____ ___.             __                        __   _________                                           .___
      *      /  _  \\_ |__   _______/  |_____________    _____/  |_ \_   ___ \  ____   _____   _____ _____    ____    __| _/
-     *     /  /_\  \| __ \ /  ___/\   __\_  __ \__  \ _/ ___\   __\/    \  \/ /  _ \ /     \ /     \\__  \  /    \  / __ | 
-     *    /    |    \ \_\ \\___ \  |  |  |  | \// __ \\  \___|  |  \     \___(  <_> )  Y Y  \  Y Y  \/ __ \|   |  \/ /_/ | 
-     *    \____|__  /___  /____  > |__|  |__|  (____  /\___  >__|   \______  /\____/|__|_|  /__|_|  (____  /___|  /\____ | 
-     *            \/    \/     \/                   \/     \/              \/             \/      \/     \/     \/      \/ 
+     *     /  /_\  \| __ \ /  ___/\   __\_  __ \__  \ _/ ___\   __\/    \  \/ /  _ \ /     \ /     \\__  \  /    \  / __ |
+     *    /    |    \ \_\ \\___ \  |  |  |  | \// __ \\  \___|  |  \     \___(  <_> )  Y Y  \  Y Y  \/ __ \|   |  \/ /_/ |
+     *    \____|__  /___  /____  > |__|  |__|  (____  /\___  >__|   \______  /\____/|__|_|  /__|_|  (____  /___|  /\____ |
+     *            \/    \/     \/                   \/     \/              \/             \/      \/     \/     \/      \/
      */
     function AbstractCommand(notification)
     {
@@ -332,12 +321,12 @@
     AbstractCommand.prototype.notification = null;
 
     /***
-     *       _____ ___.             __                        __   _________                  .__              
-     *      /  _  \\_ |__   _______/  |_____________    _____/  |_/   _____/ ______________  _|__| ____  ____  
-     *     /  /_\  \| __ \ /  ___/\   __\_  __ \__  \ _/ ___\   __\_____  \_/ __ \_  __ \  \/ /  |/ ___\/ __ \ 
-     *    /    |    \ \_\ \\___ \  |  |  |  | \// __ \\  \___|  | /        \  ___/|  | \/\   /|  \  \__\  ___/ 
+     *       _____ ___.             __                        __   _________                  .__
+     *      /  _  \\_ |__   _______/  |_____________    _____/  |_/   _____/ ______________  _|__| ____  ____
+     *     /  /_\  \| __ \ /  ___/\   __\_  __ \__  \ _/ ___\   __\_____  \_/ __ \_  __ \  \/ /  |/ ___\/ __ \
+     *    /    |    \ \_\ \\___ \  |  |  |  | \// __ \\  \___|  | /        \  ___/|  | \/\   /|  \  \__\  ___/
      *    \____|__  /___  /____  > |__|  |__|  (____  /\___  >__|/_______  /\___  >__|    \_/ |__|\___  >___  >
-     *            \/    \/     \/                   \/     \/            \/     \/                    \/    \/ 
+     *            \/    \/     \/                   \/     \/            \/     \/                    \/    \/
      */
     function AbstractService(facade, name, configObject)
     {
@@ -398,12 +387,12 @@
     AbstractService.prototype.facade = null;
 
     /***
-     *    __________                                                       
-     *    \______   \_______  ____   ____  ____   ______ _________________ 
+     *    __________
+     *    \______   \_______  ____   ____  ____   ______ _________________
      *     |     ___/\_  __ \/  _ \_/ ___\/ __ \ /  ___//  ___/  _ \_  __ \
      *     |    |     |  | \(  <_> )  \__\  ___/ \___ \ \___ (  <_> )  | \/
-     *     |____|     |__|   \____/ \___  >___  >____  >____  >____/|__|   
-     *                                  \/    \/     \/     \/             
+     *     |____|     |__|   \____/ \___  >___  >____  >____  >____/|__|
+     *                                  \/    \/     \/     \/
      */
     function Processor( )
     {
@@ -515,12 +504,12 @@
     Processor.lastProcessId = 0;
 
     /***
-     *      _________                                                     
-     *     /   _____/ ____  ________ __   ____   ____   ____  ___________ 
+     *      _________
+     *     /   _____/ ____  ________ __   ____   ____   ____  ___________
      *     \_____  \_/ __ \/ ____/  |  \_/ __ \ /    \_/ ___\/ __ \_  __ \
      *     /        \  ___< <_|  |  |  /\  ___/|   |  \  \__\  ___/|  | \/
-     *    /_______  /\___  >__   |____/  \___  >___|  /\___  >___  >__|   
-     *            \/     \/   |__|           \/     \/     \/    \/       
+     *    /_______  /\___  >__   |____/  \___  >___|  /\___  >___  >__|
+     *            \/     \/   |__|           \/     \/     \/    \/
      */
     function Sequencer() {
     }
@@ -697,12 +686,12 @@
     };
 
     /***
-     *    _________                            ____.     ___.    
-     *    \_   ___ \_______  ____   ____      |    | ____\_ |__  
-     *    /    \  \/\_  __ \/  _ \ /    \     |    |/  _ \| __ \ 
+     *    _________                            ____.     ___.
+     *    \_   ___ \_______  ____   ____      |    | ____\_ |__
+     *    /    \  \/\_  __ \/  _ \ /    \     |    |/  _ \| __ \
      *    \     \____|  | \(  <_> )   |  \/\__|    (  <_> ) \_\ \
      *     \______  /|__|   \____/|___|  /\________|\____/|___  /
-     *            \/                   \/                     \/ 
+     *            \/                   \/                     \/
      */
     function CronJob(responder, labelOrName, delay, note, stopCount)
     {
@@ -769,12 +758,12 @@
     CronJob.prototype.isRunning = false;
 
     /***
-     *    ___________                    __     ___ ___                    .___.__                
-     *    \_   _____/__  __ ____   _____/  |_  /   |   \_____    ____    __| _/|  |   ___________ 
+     *    ___________                    __     ___ ___                    .___.__
+     *    \_   _____/__  __ ____   _____/  |_  /   |   \_____    ____    __| _/|  |   ___________
      *     |    __)_\  \/ // __ \ /    \   __\/    ~    \__  \  /    \  / __ | |  | _/ __ \_  __ \
      *     |        \\   /\  ___/|   |  \  |  \    Y    // __ \|   |  \/ /_/ | |  |_\  ___/|  | \/
-     *    /_______  / \_/  \___  >___|  /__|   \___|_  /(____  /___|  /\____ | |____/\___  >__|   
-     *            \/           \/     \/             \/      \/     \/      \/           \/       
+     *    /_______  / \_/  \___  >___|  /__|   \___|_  /(____  /___|  /\____ | |____/\___  >__|
+     *            \/           \/     \/             \/      \/     \/      \/           \/
      */
 
     function EventHandler() {
@@ -818,23 +807,23 @@
                     "on"+event,
                     function(evt){ evt = getEvent(evt); if (evt.stopPropagation){ evt.stopPropagation(); }else{ evt.cancelBubble = true; } if(evt.preventDefault){ evt.preventDefault(); } listener(self, labelOrName, evt, element); }
                 );
-                    
+
             }else{
                 element.attachEvent(
                     "on"+event,
                     function(evt){ evt = getEvent(evt); listener(self, labelOrName, evt, element); }
                 );
             }
-            
+
 
         }else{
             if( stopPropagation ){
                 element["on"+event] = function(evt){ evt = getEvent(evt); if (evt.stopPropagation){ evt.stopPropagation(); }else{ evt.cancelBubble = true; } if(evt.preventDefault){ evt.preventDefault(); } listener(self, labelOrName, evt, element); };
-                    
+
             }else{
                 element["on"+event] = function(evt){ evt = getEvent(evt); listener(self, labelOrName, evt, element); };
             }
-        } 
+        }
     };
 
     EventHandler.prototype.removeEventHandler = function(labelOrName)
@@ -869,7 +858,7 @@
         if(e.srcElement) e.target = e.srcElement;
         return e;
     };
-    
+
     EventHandler.prototype.handleEvent = function(self, labelOrName, evt, element)
     {
         if (!self._handlerStack[ labelOrName ])
@@ -877,22 +866,22 @@
         var obj = better.clone( self._handlerStack[ labelOrName ].note );
         obj.body = obj.body || {};
         obj.body.event = evt;
-        
+
         self.facade.goTo( obj.name, obj.body, obj.type );
     };
-    
+
     EventHandler.prototype.doesHandleEvent = function( labelOrName )
     {
         return ( !this._handlerStack[ labelOrName ] )? false : true;
     };
 
     /***
-     *    __________                                           
+     *    __________
      *    \______   \_______  ____   ____  ____   ______ ______
      *     |     ___/\_  __ \/  _ \_/ ___\/ __ \ /  ___//  ___/
-     *     |    |     |  | \(  <_> )  \__\  ___/ \___ \ \___ \ 
+     *     |    |     |  | \(  <_> )  \__\  ___/ \___ \ \___ \
      *     |____|     |__|   \____/ \___  >___  >____  >____  >
-     *                                  \/    \/     \/     \/ 
+     *                                  \/    \/     \/     \/
      */
     function Process(pid, tasksArray)
     {
@@ -921,12 +910,12 @@
     Process.CRASHED = 'Process.CRASHED';
 
     /***
-     *    ____   ____.__               
+     *    ____   ____.__
      *    \   \ /   /|__| ______  _  __
      *     \   Y   / |  |/ __ \ \/ \/ /
-     *      \     /  |  \  ___/\     / 
-     *       \___/   |__|\___  >\/\_/  
-     *                       \/        
+     *      \     /  |  \  ___/\     /
+     *       \___/   |__|\___  >\/\_/
+     *                       \/
      */
     function View( )
     {
@@ -964,8 +953,8 @@
                 observer.notifyObserver(notification);
             }
         }
-        
-        
+
+
     };
 
     View.prototype.removeObserver = function(notificationName, notifyContext)
@@ -1053,12 +1042,12 @@
     View.prototype.observerMap = null;
 
     /***
-     *       _____             .___     .__   
-     *      /     \   ____   __| _/____ |  |  
-     *     /  \ /  \ /  _ \ / __ |/ __ \|  |  
+     *       _____             .___     .__
+     *      /     \   ____   __| _/____ |  |
+     *     /  \ /  \ /  _ \ / __ |/ __ \|  |
      *    /    Y    (  <_> ) /_/ \  ___/|  |__
      *    \____|__  /\____/\____ |\___  >____/
-     *            \/            \/    \/      
+     *            \/            \/    \/
      */
     function Model() {
         this.proxyMap = [];
@@ -1099,12 +1088,12 @@
     Model.prototype.ressources = null;
 
     /***
-     *    _________                __                .__  .__                
-     *    \_   ___ \  ____   _____/  |________  ____ |  | |  |   ___________ 
+     *    _________                __                .__  .__
+     *    \_   ___ \  ____   _____/  |________  ____ |  | |  |   ___________
      *    /    \  \/ /  _ \ /    \   __\_  __ \/  _ \|  | |  | _/ __ \_  __ \
      *    \     \___(  <_> )   |  \  |  |  | \(  <_> )  |_|  |_\  ___/|  | \/
-     *     \______  /\____/|___|  /__|  |__|   \____/|____/____/\___  >__|   
-     *            \/            \/                                  \/       
+     *     \______  /\____/|___|  /__|  |__|   \____/|____/____/\___  >__|
+     *            \/            \/                                  \/
      */
     function Controller( )
     {
@@ -1158,12 +1147,12 @@
     Controller.prototype.eventHandler = null;
 
     /***
-     *       _____ ___.             __                        __ ___________                         .___      
-     *      /  _  \\_ |__   _______/  |_____________    _____/  |\_   _____/____    ____ _____     __| _/____  
-     *     /  /_\  \| __ \ /  ___/\   __\_  __ \__  \ _/ ___\   __\    __) \__  \ _/ ___\\__  \   / __ |/ __ \ 
-     *    /    |    \ \_\ \\___ \  |  |  |  | \// __ \\  \___|  | |     \   / __ \\  \___ / __ \_/ /_/ \  ___/ 
+     *       _____ ___.             __                        __ ___________                         .___
+     *      /  _  \\_ |__   _______/  |_____________    _____/  |\_   _____/____    ____ _____     __| _/____
+     *     /  /_\  \| __ \ /  ___/\   __\_  __ \__  \ _/ ___\   __\    __) \__  \ _/ ___\\__  \   / __ |/ __ \
+     *    /    |    \ \_\ \\___ \  |  |  |  | \// __ \\  \___|  | |     \   / __ \\  \___ / __ \_/ /_/ \  ___/
      *    \____|__  /___  /____  > |__|  |__|  (____  /\___  >__| \___  /  (____  /\___  >____  /\____ |\___  >
-     *            \/    \/     \/                   \/     \/         \/        \/     \/     \/      \/    \/ 
+     *            \/    \/     \/                   \/     \/         \/        \/     \/     \/      \/    \/
      */
     function AbstractFacade( )
     {
@@ -1185,7 +1174,7 @@
     {
         return this.controller.eventHandler.doesHandleEvent( labelOrName );
     };
-        
+
     AbstractFacade.prototype.registerEventHandler = function(labelOrName, element, event, note, useCapture, stopPropagation)
     {
         this.controller.eventHandler.registerEventHandler(labelOrName, element, event, note, useCapture, stopPropagation);
@@ -1194,7 +1183,7 @@
     AbstractFacade.prototype.removeEventHandler = function(labelOrName)
     {
         this.controller.eventHandler.removeEventHandler(labelOrName);
-    };  
+    };
     // Animation Frame JOB
     AbstractFacade.prototype.registerAnimationFrameJob = function(labelOrName, note)
     {
@@ -1350,7 +1339,7 @@
     {
         this.model.ressources[name] = obj;
     };
-    
+
     AbstractFacade.prototype.registerProxy = function(proxy)
     {
         this.model.registerProxy(proxy);
@@ -1449,22 +1438,18 @@
 
     AbstractFacade.log = function(obj)
     {
-        if (AbstractFacade.isDebug) {
-            if ("console" in window && typeof console == "object") {
-                console.log(obj);
-            }
-        }
+        console.log(obj);
     }
 
     AbstractFacade.isDebug = true;
 
     /***
-     *     ____ ___   __  .__.__          
+     *     ____ ___   __  .__.__
      *    |    |   \_/  |_|__|  |   ______
      *    |    |   /\   __\  |  |  /  ___/
-     *    |    |  /  |  | |  |  |__\___ \ 
+     *    |    |  /  |  | |  |  |__\___ \
      *    |______/   |__| |__|____/____  >
-     *                                 \/ 
+     *                                 \/
      */
     var log = function(obj)
     {
@@ -1476,7 +1461,7 @@
     {
         AbstractFacade.isDebug = bool;
     };
-    
+
     var in_array = function  (needle, haystack, argStrict) {
         var key = '',
         strict = !! argStrict;
@@ -1497,7 +1482,7 @@
 
         return false;
     };
-    
+
     var clone = function(obj) {
         // Handle the 3 simple types, and null or undefined
         if (null == obj || "object" != typeof obj) return obj;
@@ -1530,18 +1515,13 @@
         throw new Error("Unable to copy obj! Its type isn't supported.");
     };
 
-    scope.better = {
-        AbstractProxy: AbstractProxy,
-        AbstractMediator: AbstractMediator,
-        AbstractCommand: AbstractCommand,
-        AbstractFacade: AbstractFacade,
-        AbstractService: AbstractService,
-        Notification: Notification,
-        log: log,
-        setDebug: setDebug,
-        'in_array' : in_array,
-        clone : clone
+    module.exports = {
+      AbstractProxy,
+      AbstractMediator,
+      AbstractCommand,
+      AbstractFacade,
+      AbstractService,
+      Notification
     };
-
 
 })(this); // the 'this' parameter will resolve to global scope in all environments
